@@ -11,6 +11,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class UserController {
@@ -47,6 +51,38 @@ public class UserController {
         }
         return "login";
     }
+    @PostMapping("/login")
+    public String processLogin(@RequestParam("username") String username,
+                               @RequestParam("password") String password,
+                               RedirectAttributes redirectAttributes) {
+        // Check username and password validity
+        if (isValidLogin(username, password)) {
+            // Successful login logic
+            return "redirect:/welcome"; // Redirect to dashboard or desired page after successful login
+        } else {
+            // Invalid login, redirect back to login page with error message
+            redirectAttributes.addAttribute("error", "true");
+            return "redirect:/login";
+        }
+    }
+
+    private boolean isValidLogin(String username, String password) {
+        // Simulated user database
+        Map<String, String> userDatabase = new HashMap<>();
+        userDatabase.put("user1", "password1");
+        userDatabase.put("user2", "password2");
+        userDatabase.put("user3", "password3");
+
+        // Check if the username exists in the database
+        if (userDatabase.containsKey(username)) {
+            // Compare the stored password with the provided password
+            String storedPassword = userDatabase.get(username);
+            return storedPassword.equals(password);
+        }
+
+        return false; // Username not found or password doesn't match
+    }
+
 
     @GetMapping("/welcome")
     public String showWelcomePage() {
